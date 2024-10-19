@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\13002\\Desktop\\landing-light\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{8BBBA5B2-A76F-4C6C-8924-49AFB45CA725}|landing-light\\landing-light.vcxproj|C:\\Users\\13002\\Desktop\\landing-light\\landing-light\\sim.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8BBBA5B2-A76F-4C6C-8924-49AFB45CA725}|landing-light\\landing-light.vcxproj|solutionrelative:landing-light\\sim.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "sim.c",
+              "DocumentMoniker": "C:\\Users\\13002\\Desktop\\landing-light\\landing-light\\sim.c",
+              "RelativeDocumentMoniker": "landing-light\\sim.c",
+              "ToolTip": "C:\\Users\\13002\\Desktop\\landing-light\\landing-light\\sim.c",
+              "RelativeToolTip": "landing-light\\sim.c",
+              "ViewState": "AgIAADMAAAAAAAAAAAAAAEsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2024-10-18T12:49:54.591Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
