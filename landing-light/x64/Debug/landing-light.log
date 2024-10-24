@@ -1,2 +1,3 @@
-﻿  sim.c
-  landing-light.vcxproj -> C:\Users\13002\Desktop\landing-light\x64\Debug\landing-light.exe
+﻿E:\VisualStudio\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (landing-light.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  sim.c
+  landing-light.vcxproj -> C:\Users\13002\Desktop\landing-light\x64\Debug\taxi-light.exe
