@@ -1,13 +1,15 @@
 ﻿#include <stdio.h>
 #include <windows.h>
 #include <SimConnect.h>
+#include <PMDG_NG3_SDK.h>
 
 struct Data {
 	double nose_light;
 };
 
 enum REQUEST_ID {
-	REQUEST_NOSE_LIGHT
+	REQUEST_NOSE_LIGHT,
+	DATA_REQUEST
 };
 
 enum DEFINE_ID {
@@ -20,24 +22,58 @@ struct LvarData {
 
 HANDLE hSimConnect = NULL;
 
+bool NG3_TaxiLightSwitch;
+bool NG3_RunwayTurnoffSwitchLeft;
+unsigned short NG3_CourseLeft;
+
+void ProcessNG3Data(PMDG_NG3_Data* pS)
+{
+	// test the data access:
+	// get the state of switches and save it for later use
+	if (pS->LTS_TaxiSw != NG3_TaxiLightSwitch)
+	{
+		NG3_TaxiLightSwitch = pS->LTS_TaxiSw;
+		if (NG3_TaxiLightSwitch)
+			printf("TAXI LIGHTS: [ON]\n");
+		else
+			printf("TAXI LIGHTS: [OFF]\n");
+	}
+
+	if (pS->LTS_RunwayTurnoffSw[0] != NG3_RunwayTurnoffSwitchLeft) {
+		NG3_RunwayTurnoffSwitchLeft = pS->LTS_RunwayTurnoffSw[0];
+		if (NG3_RunwayTurnoffSwitchLeft)
+			printf("RUNWAY TURNOFF LIGHTS LEFT: [ON]\n");
+		else
+			printf("RUNWAY TURNOFF LIGHTS LEFT: [OFF]\n");
+	}
+
+	if (pS->MCP_Course[0] != NG3_CourseLeft) {
+		NG3_CourseLeft = pS->MCP_Course[0];
+		printf("COURSE: %d\n", NG3_CourseLeft);
+	}
+}
+
 void CALLBACK MyDispatchProc(SIMCONNECT_RECV* pData, DWORD cbData, void* pContext) {
 	SIMCONNECT_RECV_SIMOBJECT_DATA* pObjData;
 	SIMCONNECT_RECV_EXCEPTION* except;
+	PMDG_NG3_Data* pS;
 	switch (pData->dwID) {
-	case SIMCONNECT_RECV_ID_SIMOBJECT_DATA:
-		pObjData = (SIMCONNECT_RECV_SIMOBJECT_DATA*)pData;
-		if (pObjData->dwRequestID == REQUEST_NOSE_LIGHT) {
-			struct Data* pS = (struct Data*)&pObjData->dwData;
-			printf("Nose Light: %.0f\n", pS->nose_light);
+	case SIMCONNECT_RECV_ID_CLIENT_DATA:
+	{
+		SIMCONNECT_RECV_CLIENT_DATA* pObjData =
+			(SIMCONNECT_RECV_CLIENT_DATA*)pData;
+		switch (pObjData->dwRequestID)
+		{
+		case DATA_REQUEST:
+		{
+			PMDG_NG3_Data* pS =
+				(PMDG_NG3_Data*)&pObjData->dwData;
+			ProcessNG3Data(pS);
+			break;
 		}
-		else {
-			printf("Unknown request ID: %d\n", pObjData->dwRequestID);
 		}
 		break;
-	case SIMCONNECT_RECV_ID_EXCEPTION:
-		except = (SIMCONNECT_RECV_EXCEPTION*)pData;
-		printf("Exception: %d\n", except->dwException);
-		break;
+	}
 	default:
 		printf("Unknown packet ID: %d\n", pData->dwID);
 		break;
@@ -50,25 +86,14 @@ int main() {
 	if (SUCCEEDED(SimConnect_Open(&hSimConnect, "SimConnect Test", NULL, 0, 0, 0))) {
 		printf("Connected to Flight Simulator!\n");
 
-		// Object Data  
-		hr = SimConnect_AddToDataDefinition(hSimConnect, DEFINE_NOSE_LIGHT, "L:S_OH_EXT_LT_NOSE", "Enum", SIMCONNECT_DATATYPE_FLOAT64);
-		hr = SimConnect_RequestDataOnSimObject(hSimConnect, REQUEST_NOSE_LIGHT, DEFINE_NOSE_LIGHT, SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD_SIM_FRAME, SIMCONNECT_CLIENT_DATA_REQUEST_FLAG_CHANGED);
+		hr = SimConnect_MapClientDataNameToID(hSimConnect, PMDG_NG3_DATA_NAME, PMDG_NG3_DATA_ID);
+		hr = SimConnect_AddToClientDataDefinition(hSimConnect, PMDG_NG3_DATA_DEFINITION, 0, sizeof(PMDG_NG3_Data), 0, 0);
+		hr = SimConnect_RequestClientData(hSimConnect, PMDG_NG3_DATA_ID,
+			DATA_REQUEST, PMDG_NG3_DATA_DEFINITION,
+			SIMCONNECT_CLIENT_DATA_PERIOD_ON_SET,
+			SIMCONNECT_CLIENT_DATA_REQUEST_FLAG_CHANGED, 0, 0, 0);
 
 		while (1) {
-			printf("Set Nose Light -> ");
-			int nosepos;
-			if (scanf_s("%d", &nosepos) == 1) {
-				if (nosepos == -1) break;
-				LvarData data = { (double)nosepos };
-				hr = SimConnect_SetDataOnSimObject(hSimConnect, DEFINE_NOSE_LIGHT, SIMCONNECT_OBJECT_ID_USER, NULL, 0, sizeof(LvarData), &data);
-				printf("%s\n", hr == S_OK ? "Success" : "Failed");
-			}
-			else {
-				printf("Invalid input! Please enter a valid integer.\n");
-				// Clear the input buffer  
-				while (getchar() != '\n');
-				continue;
-			}
 			SimConnect_CallDispatch(hSimConnect, MyDispatchProc, NULL);
 		}
 

@@ -1,3 +1,6 @@
 ﻿E:\VisualStudio\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (landing-light.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   sim.c
+C:\Users\13002\Desktop\landing-light\landing-light\sim.c(59,17): warning C4101: 'pS': unreferenced local variable
+C:\Users\13002\Desktop\landing-light\landing-light\sim.c(58,29): warning C4101: 'except': unreferenced local variable
+C:\Users\13002\Desktop\landing-light\landing-light\sim.c(57,34): warning C4101: 'pObjData': unreferenced local variable
   landing-light.vcxproj -> C:\Users\13002\Desktop\landing-light\x64\Debug\taxi-light.exe
