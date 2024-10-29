@@ -3,21 +3,8 @@
 #include <SimConnect.h>
 #include <PMDG_NG3_SDK.h>
 
-struct Data {
-	double nose_light;
-};
-
 enum REQUEST_ID {
-	REQUEST_NOSE_LIGHT,
 	DATA_REQUEST
-};
-
-enum DEFINE_ID {
-	DEFINE_NOSE_LIGHT
-};
-
-struct LvarData {
-	double value;
 };
 
 HANDLE hSimConnect = NULL;
